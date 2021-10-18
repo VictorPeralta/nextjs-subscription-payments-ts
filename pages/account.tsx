@@ -38,12 +38,15 @@ export default function Account() {
 
   const redirectToCustomerPortal = async () => {
     setLoading(true);
-    const { url, error } = await postData({
-      url: '/api/create-portal-link',
-      token: session.access_token
-    });
-    if (error) return alert(error.message);
-    window.location.assign(url);
+    try {
+      const { url, error } = await postData({
+        url: '/api/create-portal-link',
+        token: session.access_token
+      });
+      window.location.assign(url);
+    } catch (error) {
+      if (error) return alert((error as Error).message);
+    }
     setLoading(false);
   };
 

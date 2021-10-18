@@ -15,9 +15,7 @@ type UserContextType = {
   signOut: () => any;
 };
 
-export const UserContext = createContext<UserContextType | undefined>(
-  undefined
-);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserContextProvider = (props: any) => {
   const [userLoaded, setUserLoaded] = useState(false);
@@ -30,20 +28,17 @@ export const UserContextProvider = (props: any) => {
     const session = supabase.auth.session();
     setSession(session);
     setUser(session?.user ?? null);
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
-    );
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
 
     return () => {
       authListener?.unsubscribe();
     };
   }, []);
 
-  const getUserDetails = () =>
-    supabase.from<UserDetails>('users').select('*').single();
+  const getUserDetails = () => supabase.from<UserDetails>('users').select('*').single();
   const getSubscription = () =>
     supabase
       .from<Subscription>('subscriptions')
@@ -53,20 +48,17 @@ export const UserContextProvider = (props: any) => {
 
   useEffect(() => {
     if (user) {
-      Promise.allSettled([getUserDetails(), getSubscription()]).then(
-        (results) => {
-          const userDetailsPromise = results[0];
-          const subscriptionPromise = results[1];
+      Promise.allSettled([getUserDetails(), getSubscription()]).then((results) => {
+        const userDetailsPromise = results[0];
+        const subscriptionPromise = results[1];
 
-          if (userDetailsPromise.status === 'fulfilled')
-            setUserDetails(userDetailsPromise.value.data);
+        console.log('subscription', subscriptionPromise);
+        if (userDetailsPromise.status === 'fulfilled') setUserDetails(userDetailsPromise.value.data);
 
-          if (subscriptionPromise.status === 'fulfilled')
-            setSubscription(subscriptionPromise.value.data);
+        if (subscriptionPromise.status === 'fulfilled') setSubscription(subscriptionPromise.value.data);
 
-          setUserLoaded(true);
-        }
-      );
+        setUserLoaded(true);
+      });
     }
   }, [user]);
 

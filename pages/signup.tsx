@@ -9,27 +9,27 @@ import { updateUserName } from 'utils/supabase-client';
 import { useUser } from 'utils/useUser';
 
 const SignUp = () => {
-  const [user, setUser] = useState(null);
+  const [newUser, setNewUser] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type?: string; content?: string }>({ type: '', content: '' });
   const router = useRouter();
-  const { signUp } = useUser();
+  const { signUp, user } = useUser();
 
   const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setLoading(true);
     setMessage({});
-    const { error, user } = await signUp({ email, password });
+    const { error, user: createdUser } = await signUp({ email, password });
     if (error) {
       setMessage({ type: 'error', content: error.message });
     } else {
-      if (user) {
-        await updateUserName(user, name);
-        setUser(user);
+      if (createdUser) {
+        await updateUserName(createdUser, name);
+        setNewUser(createdUser);
       } else {
         setMessage({
           type: 'note',
@@ -41,10 +41,13 @@ const SignUp = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    //Redirect to /account if a new user is created OR a logged in user visits this page
+    console.log('user effect', newUser, user);
+
+    if (newUser || user) {
       router.replace('/account');
     }
-  }, [user]);
+  }, [newUser, user]);
 
   return (
     <div className="flex justify-center height-screen-helper">

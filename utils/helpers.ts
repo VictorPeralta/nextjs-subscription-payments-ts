@@ -11,6 +11,8 @@ export const getURL = () => {
 };
 
 export const postData = async ({ url, token, data }: { url: string; data?: { price: Price }; token: string }) => {
+  console.log('posting,', url, token, data);
+
   const res: Response = await fetch(url, {
     method: 'POST',
     headers: new Headers({ 'Content-Type': 'application/json', token }),
@@ -19,6 +21,8 @@ export const postData = async ({ url, token, data }: { url: string; data?: { pri
   });
 
   if (!res.ok) {
+    console.log('Error in postData', { url, token, data, res });
+
     throw Error(res.statusText);
   }
 

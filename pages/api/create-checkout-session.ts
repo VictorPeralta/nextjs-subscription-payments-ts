@@ -11,6 +11,7 @@ const createCheckoutSession = async (req: NextApiRequest, res: NextApiResponse) 
 
     try {
       const user = await getUser(token);
+
       const customer = await createOrRetrieveCustomer({
         uuid: user?.id || '',
         email: user?.email || ''
@@ -22,7 +23,7 @@ const createCheckoutSession = async (req: NextApiRequest, res: NextApiResponse) 
         customer,
         line_items: [
           {
-            price,
+            price: price.id,
             quantity
           }
         ],
