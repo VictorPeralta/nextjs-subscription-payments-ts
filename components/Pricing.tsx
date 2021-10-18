@@ -6,10 +6,10 @@ import Button from 'components/ui/Button';
 import { postData } from 'utils/helpers';
 import { getStripe } from 'utils/stripe-client';
 import { useUser } from 'utils/useUser';
-import { Product, Price } from 'types';
+import { Product, Price, ProductWithPrice } from 'types';
 
 interface Props {
-  products: Product[];
+  products: ProductWithPrice[];
 }
 type BillingInterval = 'year' | 'month';
 
@@ -38,7 +38,7 @@ export default function Pricing({ products }: Props) {
       const stripe = await getStripe();
       stripe?.redirectToCheckout({ sessionId });
     } catch (error) {
-      return alert(error.message);
+      return alert((error as Error)?.message);
     } finally {
       setPriceIdLoading(undefined);
     }
@@ -100,7 +100,7 @@ export default function Pricing({ products }: Props) {
         </div>
         <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-4">
           {products.map((product) => {
-            const price = product.prices.find((price) => price.interval === billingInterval);
+            const price = product?.prices?.find((price) => price.interval === billingInterval);
             if (!price) return null;
             const priceString = new Intl.NumberFormat('en-US', {
               style: 'currency',
@@ -112,7 +112,8 @@ export default function Pricing({ products }: Props) {
                 key={product.id}
                 className={cn('rounded-lg shadow-sm divide-y divide-accents-2 bg-primary-2', {
                   'border border-pink': subscription
-                    ? product.name === subscription?.prices?.products?.name
+                    ? // TODO Check if this products is an array or single
+                      product.name === subscription?.prices?.products?.[0]?.name
                     : product.name === 'Freelancer'
                 })}
               >
@@ -131,7 +132,7 @@ export default function Pricing({ products }: Props) {
                     onClick={() => handleCheckout(price)}
                     className="mt-8 block w-full rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-900"
                   >
-                    {product.name === subscription?.prices?.products?.name ? 'Manage' : 'Subscribe'}
+                    {product.name === subscription?.prices?.products?.[0]?.name ? 'Manage' : 'Subscribe'}
                   </Button>
                 </div>
               </div>

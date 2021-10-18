@@ -13,6 +13,7 @@ export default function PricingPage({ products }: Props) {
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
   const products = await getActiveProductsWithPrices();
+  console.log('proucts get');
 
   return {
     props: {

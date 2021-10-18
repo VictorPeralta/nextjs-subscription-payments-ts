@@ -47,7 +47,7 @@ export default function Account() {
     setLoading(false);
   };
 
-  const subscriptionName = subscription && subscription?.prices?.products?.name;
+  const subscriptionName = subscription && subscription?.prices?.products?.[0]?.name;
   const subscriptionPrice =
     subscription &&
     new Intl.NumberFormat('en-US', {

@@ -2,8 +2,10 @@ import React, { InputHTMLAttributes, ChangeEvent } from 'react';
 import cn from 'classnames';
 import s from './Input.module.css';
 
-interface Props extends InputHTMLAttributes<any> {}
-
+interface Props extends Omit<InputHTMLAttributes<any>, 'onChange'> {
+  className?: string;
+  onChange: (value: string) => any;
+}
 const Input = (props: Props) => {
   const { className, children, onChange, ...rest } = props;
 
@@ -11,7 +13,7 @@ const Input = (props: Props) => {
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
-      onChange(e);
+      onChange(e.target.value);
     }
     return null;
   };
